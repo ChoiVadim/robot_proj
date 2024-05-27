@@ -5,3 +5,5 @@ pyserial
 SpeechRecognition
 pydub
 PyAudio
+setuptools
+keyboard

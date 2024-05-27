@@ -3,6 +3,7 @@ import time
 import json
 import serial
 import openai
+import keyboard
 from dotenv import load_dotenv
 import speech_recognition as sr
 from pydub import AudioSegment
@@ -135,8 +136,10 @@ class AdvancedAssistantManager(AssistantManager):
         try:
             ser.write(command.encode())
             print(f"Sent '{command}' to Arduino")
+            return True
         except serial.SerialException as e:
             print(f"Error sending data: {e}")
+            return False
 
     def close_connection(self):
         if self.ser and self.ser.is_open:
@@ -188,12 +191,17 @@ class AdvancedAssistantManager(AssistantManager):
                 direction = arguments["direction"]
                 duration = arguments["duration"]
                 command = f"{direction},{duration}"
-                self.send_command(self.ser, command)
+                output = self.send_command(self.ser, command)
+
+                if output:
+                    output = f"Moved {direction} for {duration} seconds"
+                else:
+                    output = f"Failed to move {direction} for {duration} seconds"
 
                 tool_outputs.append(
                     {
                         "tool_call_id": action["id"],
-                        "output": f"Moved {direction} for {duration} seconds",
+                        "output": output,
                     }
                 )
 
@@ -220,22 +228,29 @@ def main():
     # manager.create_thread()
 
     while True:
+        print("Press 'spacebar' to start the while loop...")
+        keyboard.wait("space")
+
         try:
             # Get user input
             input = manager.speech_to_text()
-            print(f"Human: \033[94m{input}\033[0m")
+            print(f"Human: \033[94m{input}\033[0m\n")
+            if not input:
+                continue
 
             # Add the message and run the assistant
             manager.add_message_to_thread(role="user", content=input)
             manager.run_assistant()
 
             # Wait for completions and process messages
+            print("Waiting for response...")
             manager.wait_for_completion()
 
             # Get response from assistant and convert it to speech
+            print("Converting response to speech...")
             output = manager.get_response()
             manager.text_to_speech(output)
-            print(f"IIO: \033[95m{output}\033[0m\n")
+            print(f"AAO: \033[95m{output}\033[0m\n")
 
         except Exception as e:
             print(f"An error occurred: {e}")
