@@ -7,5 +7,4 @@ pydub
 PyAudio
 setuptools
 keyboard
-tensorflow
-numpy
+cv2-python

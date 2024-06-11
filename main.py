@@ -14,15 +14,15 @@ def main():
         keyboard.wait("space")
 
         try:
-            # Get user input
-            input = manager.speech_to_text()
-            print(f"Human: \033[94m{input}\033[0m\n")
+            # Get user message
+            message = manager.speech_to_text()
+            print(f"Human: \033[94m{message}\033[0m\n")
 
-            if not input:
+            if not message:
                 continue
 
             # Add the message and run the assistant
-            manager.add_message_to_thread(role="user", content=input)
+            manager.add_message_to_thread(role="user", content=message)
             manager.run_assistant()
 
             # Wait for completions and process messages
