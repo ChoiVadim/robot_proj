@@ -119,10 +119,12 @@ class AssistantManager:
 
 
 class AdvancedAssistantManager(AssistantManager):
-    def __init__(self, port: str):
+    def __init__(self, port_1: str, port_2: str):
         super().__init__()
-        self.port = port
-        self.ser = self.connect_to_arduino(self.port)
+        self.port_1 = port_1
+        self.port_2 = port_2
+        self.ser_1 = self.connect_to_arduino(self.port_1)
+        self.ser_2 = self.connect_to_arduino(self.port_2)
 
     ##### Connection and Sending data to Arduino #####
     def connect_to_arduino(self, port, baud_rate=9600):
@@ -133,17 +135,33 @@ class AdvancedAssistantManager(AssistantManager):
 
     def send_command(self, ser, command):
         try:
+            if not ser:
+                return False
             ser.write(command.encode())
             print(f"Sent '{command}' to Arduino")
             return True
+
         except serial.SerialException as e:
             print(f"Error sending data: {e}")
             return False
 
+    def receive_message_from_arduino(self, ser, port):
+        try:
+            message = ser.readline().decode().strip()
+            print(f"Received message from Arduino on port {port}: {message}")
+            return message
+        except serial.SerialException as e:
+            print(f"Error receiving message from Arduino on port {port}: {e}")
+            return None
+
     def close_connection(self):
-        if self.ser and self.ser.is_open:
-            self.ser.close()
-            print(f"Connection to {self.port} closed.")
+        if self.ser_1 and self.ser_1.is_open:
+            self.ser_1.close()
+            print(f"Connection to {self.port_1} closed.")
+
+        if self.ser_2 and self.ser_2.is_open:
+            self.ser_2.close()
+            print(f"Connection to {self.port_2} closed.")
 
     ##### Recording Audio, Speech to Text, and Text to Speech #####
     def record_audio(self, file_path):
@@ -186,11 +204,11 @@ class AdvancedAssistantManager(AssistantManager):
             func_name = action["function"]["name"]
             arguments = json.loads(action["function"]["arguments"])
 
-            if func_name == "move" and self.ser:
+            if func_name == "move":
                 direction = arguments["direction"]
                 duration = arguments["duration"]
                 command = f"{direction},{duration}"
-                output = self.send_command(self.ser, command)
+                output = self.send_command(self.ser_1, command)
 
                 if output:
                     output = f"Moved {direction} for {duration} seconds"
@@ -204,8 +222,31 @@ class AdvancedAssistantManager(AssistantManager):
                     }
                 )
 
+            elif func_name == "set_timer":
+                duration = arguments["duration"]
+                command = f"timer, {duration}"
+                output = self.send_command(self.ser_2, command)
+                msg = self.receive_message_from_arduino(
+                    ser=self.ser_2, port=self.port_2
+                )
+                if msg:
+                    self.text_to_speech(f"Wake up brooooh!")
+                    self.send_command(self.ser_1, "wakeup,1")
+
+                if output:
+                    output = f"Set timer for {duration} seconds"
+                else:
+                    output = f"Failed to set timer for {duration} seconds"
+
+                tool_outputs.append(
+                    {
+                        "tool_call_id": action["id"],
+                        "output": output,
+                    }
+                )
+
             else:
-                raise ValueError(f"Unknown function: {func_name}")
+                print(f"Unknown function: {func_name}")
 
         print("Submitting outputs back to the Assistant...")
         self.client.beta.threads.runs.submit_tool_outputs(

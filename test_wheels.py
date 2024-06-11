@@ -23,22 +23,21 @@ def send_command(ser, command):
 
 # Main function to set up controls
 def main():
-    port = "COM9"  # Make sure this COM port matches the one used by your Arduino
+    port = "COM8"  # Make sure this COM port matches the one used by your Arduino
     ser = connect_to_arduino(port)
 
     # Print instructions
     print("Control the car using 'W', 'S', 'A', 'D' keys. Press ESC to stop and exit.")
 
     # Binding keys to specific actions
-    keyboard.add_hotkey("w", send_command, args=(ser, "forward, 1"))
-    keyboard.add_hotkey("s", send_command, args=(ser, "backward, 1"))
-    keyboard.add_hotkey("a", send_command, args=(ser, "left, 1"))
-    keyboard.add_hotkey("d", send_command, args=(ser, "right, 1"))
+    keyboard.add_hotkey("w", send_command, args=(ser, "forward,1"))
+    keyboard.add_hotkey("s", send_command, args=(ser, "backward,1"))
+    keyboard.add_hotkey("a", send_command, args=(ser, "left,1"))
+    keyboard.add_hotkey("d", send_command, args=(ser, "right,1"))
     keyboard.on_press_key("esc", lambda _: send_command(ser, "stop"))  # Stop and exit
 
     # Wait for the 'esc' key to exit
     keyboard.wait("esc")
-
     # Cleanup on exit
     ser.close()
 

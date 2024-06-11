@@ -1,12 +1,14 @@
 import keyboard
 
-from constants import my_thread, assistant_id, com_port
+from constants import *
 from utils import AdvancedAssistantManager
 
 
 def main():
-    manager = AdvancedAssistantManager(port=com_port)
-    manager.set_assistant_id(assistant_id=assistant_id)
+    manager = AdvancedAssistantManager(
+        port_1=com_port_1,
+    )
+    manager.set_assistant_id(assistant_id=my_assistant_id)
     manager.set_thread_id(thread_id=my_thread)
 
     while True:
