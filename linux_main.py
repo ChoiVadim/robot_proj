@@ -1,18 +1,13 @@
-import keyboard
-
 from constants import *
 from utils import AdvancedAssistantManager
 
 
 def main():
-    manager = AdvancedAssistantManager(port_1=com_port_1, port_2=com_port_2)
+    manager = AdvancedAssistantManager(port_1="/dev/ttyUSB0", port_2="/dev/ttyUSB1")
     manager.set_assistant_id(assistant_id=my_assistant_id)
     manager.set_thread_id(thread_id=my_thread)
 
     while True:
-        print("Press 'spacebar' to start the while loop...")
-        keyboard.wait("space")
-
         try:
             # Get user input
             input = manager.speech_to_text()

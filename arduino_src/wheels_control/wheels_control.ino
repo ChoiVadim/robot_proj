@@ -10,7 +10,6 @@ void setup() {
   pinMode(IN3, OUTPUT);
   pinMode(IN4, OUTPUT);
 
-  //moveForward(1);
 }
 
 void loop() {
@@ -35,45 +34,45 @@ void processCommand(String command) {
     } else if (cmd == "right") {
       turnRight(duration);
     } else if (cmd == "wakeup") {
-      moveForward(duration);
-      moveBackward(duration);
+      moveForward(2);
+      moveBackward(1);
     }
   }
 }
 
 
 void moveForward(int duration){
-  digitalWrite(IN2, LOW);
-  digitalWrite(IN4, LOW);
   digitalWrite(IN1, HIGH);
-  digitalWrite(IN3, HIGH);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN4, HIGH);
   delay(duration*1000);
   stop();
 }
 
 void moveBackward(int duration){
   digitalWrite(IN1, LOW);
-  digitalWrite(IN3, LOW);
+  digitalWrite(IN3, HIGH);
   digitalWrite(IN2, HIGH);
-  digitalWrite(IN4, HIGH);
+  digitalWrite(IN4, LOW);
   delay(duration*1000);
   stop();
 }
 
 void turnLeft(int duration) {
-  digitalWrite(IN1, HIGH);
-  digitalWrite(IN3, LOW);
   digitalWrite(IN2, LOW);
-  digitalWrite(IN4, HIGH);
+  digitalWrite(IN4, LOW);
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN3, HIGH);
   delay(duration*1000);
   stop();
 }
 
 void turnRight(int duration) {
   digitalWrite(IN1, LOW);
-  digitalWrite(IN3, HIGH);
+  digitalWrite(IN3, LOW);
   digitalWrite(IN2, HIGH);
-  digitalWrite(IN4, LOW);
+  digitalWrite(IN4, HIGH);
   delay(duration*1000);
   stop();
 }

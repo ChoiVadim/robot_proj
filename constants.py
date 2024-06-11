@@ -45,5 +45,5 @@ instruction_for_assistant = "Your name is AAO. Your response must to be clean an
 assistant_name = "AAO"
 my_assistant_id = "asst_s4s0LTVgMRhzzukb0P0lP6GU"
 my_thread = "thread_jicuyfcwA53gcTZmGGVvihGl"
-com_port_1 = "COM8"
+com_port_1 = "COM5"
 com_port_2 = "COM9"

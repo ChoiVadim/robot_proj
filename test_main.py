@@ -19,6 +19,8 @@ def main():
     manager.set_assistant_id(assistant_id=my_assistant_id)
     manager.set_thread_id(thread_id=my_thread)
 
+    count = 0
+
     # Get the data from Firebase
     while True:
         response = requests.get(f"{url}/condition.json")
@@ -29,24 +31,30 @@ def main():
         # Condition Structure
         if condition == "Study":
             print("You are not sleeping.")
+            count = 0
         elif condition == "Tired":
             print("You're taking the action of sleeping.")
+            count = 0
         elif condition == "Sleep":
-            message = "Set timer for 5 sec"
-            print("You are sleeping!")
+            count += 1
+            print(count)
+            if count > 5:
+                message = "Set timer for 5 sec"
+                print("You are sleeping!")
 
-            # Add the message and run the assistant
-            manager.add_message_to_thread(role="user", content=message)
-            manager.run_assistant()
+                # Add the message and run the assistant
+                manager.add_message_to_thread(role="user", content=message)
+                manager.run_assistant()
 
-            # Wait for completions and process messages
-            print("Waiting for response...")
-            manager.wait_for_completion()
+                # Wait for completions and process messages
+                print("Waiting for response...")
+                manager.wait_for_completion()
 
-            # Get response from assistant and convert it to speech
-            print("Converting response to speech...")
-            output = manager.get_response()
-            print(f"AAO: \033[95m{output}\033[0m\n")
+                # Get response from assistant and convert it to speech
+                print("Converting response to speech...")
+                output = manager.get_response()
+                print(f"AAO: \033[95m{output}\033[0m\n")
+                count = 0
 
 
 if __name__ == "__main__":
