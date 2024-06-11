@@ -1,85 +1,73 @@
-// Пины для управления моторами
-const int motor1Pin1 = 6;
-const int motor1Pin2 = 7;
-const int motor2Pin1 = 8;
-const int motor2Pin2 = 9;
+int IN1 = 6;
+int IN2 = 7;
+int IN3 = 8;
+int IN4 = 9;
 
 void setup() {
-    // Устанавливаем пины как выходы
-    pinMode(motor1Pin1, OUTPUT);
-    pinMode(motor1Pin2, OUTPUT);
-    pinMode(motor2Pin1, OUTPUT);
-    pinMode(motor2Pin2, OUTPUT);
-    
-    Serial.begin(9600);
+  Serial.begin(9600);
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+  pinMode(IN3, OUTPUT);
+  pinMode(IN4, OUTPUT);
+  Serial.begin(9600); 
+
+  // moveForward();
+  // delay(1000);
+  // stop();
+  // moveLeft();
+  // delay(1000);
+  // stop();
+  // moveRight();
+  // delay(1000);
+  // stop();
 }
 
 void loop() {
-    if (Serial.available() > 0) {
-        String command = Serial.readStringUntil('\n');
-        processCommand(command);
+  if (Serial.available() > 0) {
+    String command = Serial.readStringUntil('\n');
+    if (command == "left") {
+      moveLeft();
+    } else if (command == "right") {
+      moveRight();
+    } else if (command == "forward") {
+      moveForward();
+    } else {
+      stop();
     }
+  }
 }
 
-void processCommand(String command) {
-    int commaIndex = command.indexOf(',');
-    if (commaIndex > 0) {
-        String direction = command.substring(0, commaIndex);
-        int duration = command.substring(commaIndex + 1).toInt();
-
-        if (direction == "forward") {
-            moveForward(duration);
-        } else if (direction == "backward") {
-            moveBackward(duration);
-        } else if (direction == "left") {
-            turnLeft(duration);
-        } else if (direction == "right") {
-            turnRight(duration);
-        } else {
-            stopMotors();
-        }
-    }
+void moveForward(){
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN4, LOW);
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN3, HIGH);
 }
 
-void moveForward(int duration) {
-    digitalWrite(motor1Pin1, HIGH);
-    digitalWrite(motor1Pin2, LOW);
-    digitalWrite(motor2Pin1, HIGH);
-    digitalWrite(motor2Pin2, LOW);
-    delay(duration * 1000);
-    stopMotors();
+void backward(){
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN2, HIGH);
+  digitalWrite(IN4, HIGH);
 }
 
-void moveBackward(int duration) {
-    digitalWrite(motor1Pin1, LOW);
-    digitalWrite(motor1Pin2, HIGH);
-    digitalWrite(motor2Pin1, LOW);
-    digitalWrite(motor2Pin2, HIGH);
-    delay(duration * 1000);
-    stopMotors();
+void moveLeft() {
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN4, HIGH);
 }
 
-void turnLeft(int duration) {
-    digitalWrite(motor1Pin1, LOW);
-    digitalWrite(motor1Pin2, HIGH);
-    digitalWrite(motor2Pin1, HIGH);
-    digitalWrite(motor2Pin2, LOW);
-    delay(duration * 1000);
-    stopMotors();
+void moveRight() {
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN2, HIGH);
+  digitalWrite(IN4, LOW);
 }
 
-void turnRight(int duration) {
-    digitalWrite(motor1Pin1, HIGH);
-    digitalWrite(motor1Pin2, LOW);
-    digitalWrite(motor2Pin1, LOW);
-    digitalWrite(motor2Pin2, HIGH);
-    delay(duration * 1000);
-    stopMotors();
-}
-
-void stopMotors() {
-    digitalWrite(motor1Pin1, LOW);
-    digitalWrite(motor1Pin2, LOW);
-    digitalWrite(motor2Pin1, LOW);
-    digitalWrite(motor2Pin2, LOW);
+void stop(){
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, LOW);
 }

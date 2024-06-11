@@ -24,3 +24,6 @@ tools_for_assistant = [
 
 instruction_for_assistant = "You are a robot Assistant AAO"
 assistant_name = "AAO"
+assistant_id = "asst_M8Glp6nEbIacAJUOLucT1lgy"
+my_thread = "thread_jhqGjLjSEywOV8XKhqxFPao5"
+com_port = "COM5"

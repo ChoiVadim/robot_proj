@@ -1,2 +1,0 @@
-0 drowsy
-1 non drowsy
