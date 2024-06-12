@@ -65,8 +65,7 @@ class AssistantManager:
             messages = self.client.beta.threads.messages.list(thread_id=self.thread.id)
             last_message = messages.data[0]
             role = last_message.role
-            response = last_message.content[0].text.value
-            self.response = f"{role.capitalize()}: {response}"
+            self.response = last_message.content[0].text.value
 
     def get_response(self):
         return self.response
@@ -119,7 +118,7 @@ class AssistantManager:
 
 
 class AdvancedAssistantManager(AssistantManager):
-    def __init__(self, port_1: str, port_2: str):
+    def __init__(self, port_1: str = "", port_2: str = ""):
         super().__init__()
         self.port_1 = port_1
         self.port_2 = port_2
@@ -128,15 +127,17 @@ class AdvancedAssistantManager(AssistantManager):
 
     ##### Connection and Sending data to Arduino #####
     def connect_to_arduino(self, port, baud_rate=9600):
+        if not port:
+            return None
         try:
             return serial.Serial(port, baud_rate)
         except serial.SerialException as e:
             print(f"Failed to connect on {port}: {e}")
 
     def send_command(self, ser, command):
+        if not ser:
+            return False
         try:
-            if not ser:
-                return False
             ser.write(command.encode())
             print(f"Sent '{command}' to Arduino")
             return True
@@ -146,6 +147,8 @@ class AdvancedAssistantManager(AssistantManager):
             return False
 
     def receive_message_from_arduino(self, ser, port):
+        if not ser:
+            return False
         try:
             message = ser.readline().decode().strip()
             print(f"Received message from Arduino on port {port}: {message}")
@@ -226,9 +229,11 @@ class AdvancedAssistantManager(AssistantManager):
                 duration = arguments["duration"]
                 command = f"timer, {duration}"
                 output = self.send_command(self.ser_2, command)
+
                 msg = self.receive_message_from_arduino(
                     ser=self.ser_2, port=self.port_2
                 )
+
                 if msg:
                     self.text_to_speech(f"Wake up brooooh!")
                     self.send_command(self.ser_1, "wakeup,1")
